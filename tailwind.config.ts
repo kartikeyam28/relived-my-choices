@@ -47,6 +47,12 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Ethnic design tokens
+        ethnic: {
+          gold: "hsl(var(--ethnic-gold))",
+          copper: "hsl(var(--ethnic-copper))",
+          sage: "hsl(var(--ethnic-sage))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -57,6 +63,19 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+      },
+      backgroundImage: {
+        'gradient-warm': 'var(--gradient-warm)',
+        'gradient-subtle': 'var(--gradient-subtle)',
+        'gradient-ethnic': 'var(--gradient-ethnic)',
+      },
+      boxShadow: {
+        'warm': 'var(--shadow-warm)',
+        'ethnic': 'var(--shadow-ethnic)',
+      },
+      transitionTimingFunction: {
+        'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
+        'bounce': 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -84,6 +103,10 @@ export default {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "typewriter": "typewriter 3s steps(50) 1s forwards",
+        "blink": "blink 0.75s step-end infinite",
+        "pulse-warm": "pulse-warm 2s ease-in-out infinite",
+        "float": "float 3s ease-in-out infinite",
       },
     },
   },

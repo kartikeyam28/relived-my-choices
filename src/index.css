@@ -2,41 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* ReLiveAI Design System - Ethnic-inspired with warm therapeutic colors
+All colors MUST be HSL for proper theming.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Base ethnic color palette */
+    --background: 55 100% 98%;
+    --foreground: 345 50% 15%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 55 100% 99%;
+    --card-foreground: 345 50% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 55 100% 99%;
+    --popover-foreground: 345 50% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary - Warm Saffron */
+    --primary: 30 100% 60%;
+    --primary-foreground: 55 100% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - Deep Maroon */
+    --secondary: 345 100% 25%;
+    --secondary-foreground: 55 100% 98%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted - Soft Cream tones */
+    --muted: 55 50% 95%;
+    --muted-foreground: 345 20% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent - Rich Indigo */
+    --accent: 275 100% 25%;
+    --accent-foreground: 55 100% 98%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 55 100% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 45 30% 90%;
+    --input: 45 30% 95%;
+    --ring: 30 100% 60%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    /* Custom ethnic design tokens */
+    --ethnic-gold: 45 100% 70%;
+    --ethnic-copper: 25 80% 50%;
+    --ethnic-sage: 120 20% 60%;
+    
+    /* Gradients */
+    --gradient-warm: linear-gradient(135deg, hsl(30 100% 60%), hsl(345 100% 25%));
+    --gradient-subtle: linear-gradient(180deg, hsl(55 100% 98%), hsl(55 50% 95%));
+    --gradient-ethnic: linear-gradient(135deg, hsl(30 100% 60%), hsl(275 100% 25%));
+    
+    /* Shadows with ethnic warmth */
+    --shadow-warm: 0 10px 30px -10px hsl(30 100% 60% / 0.3);
+    --shadow-ethnic: 0 20px 40px -10px hsl(345 100% 25% / 0.2);
+    
+    /* Animations */
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --sidebar-background: 0 0% 98%;
 
@@ -100,6 +123,126 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    background-image: 
+      radial-gradient(circle at 20% 50%, hsl(30 100% 60% / 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, hsl(275 100% 25% / 0.02) 0%, transparent 50%),
+      radial-gradient(circle at 40% 80%, hsl(345 100% 25% / 0.02) 0%, transparent 50%);
   }
+  
+  /* Ethnic ornamental patterns */
+  .ethnic-pattern {
+    background-image: 
+      radial-gradient(circle at 25% 25%, hsl(30 100% 60% / 0.1) 2px, transparent 2px),
+      radial-gradient(circle at 75% 75%, hsl(275 100% 25% / 0.08) 1px, transparent 1px);
+    background-size: 40px 40px, 20px 20px;
+  }
+  
+  .mandala-border {
+    position: relative;
+  }
+  
+  .mandala-border::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--gradient-ethnic);
+    border-radius: 2px;
+  }
+}
+
+@layer components {
+  /* Ethnic-inspired components */
+  .ethnic-card {
+    @apply bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl shadow-lg;
+    box-shadow: var(--shadow-warm);
+    transition: var(--transition-smooth);
+  }
+  
+  .ethnic-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-ethnic);
+  }
+  
+  .hero-text {
+    background: var(--gradient-ethnic);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .regret-meter {
+    @apply relative w-32 h-32 rounded-full;
+    background: conic-gradient(from 0deg, hsl(var(--primary)) 0deg, hsl(var(--destructive)) 180deg, hsl(var(--muted)) 360deg);
+  }
+  
+  .typewriter {
+    overflow: hidden;
+    border-right: 2px solid hsl(var(--primary));
+    white-space: nowrap;
+    animation: typewriter 3s steps(50) 1s forwards, blink 0.75s step-end infinite;
+  }
+  
+  .ornament-divider {
+    @apply w-full h-1 rounded-full;
+    background: var(--gradient-ethnic);
+    position: relative;
+  }
+  
+  .ornament-divider::before {
+    content: '❋';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: hsl(var(--background));
+    color: hsl(var(--primary));
+    font-size: 1.5rem;
+    padding: 0 1rem;
+  }
+}
+
+@layer utilities {
+  .bg-gradient-warm {
+    background: var(--gradient-warm);
+  }
+  
+  .bg-gradient-subtle {
+    background: var(--gradient-subtle);
+  }
+  
+  .bg-gradient-ethnic {
+    background: var(--gradient-ethnic);
+  }
+  
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+  
+  .transition-bounce {
+    transition: var(--transition-bounce);
+  }
+}
+
+/* Keyframe animations */
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink {
+  50% { border-color: transparent; }
+}
+
+@keyframes pulse-warm {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
 }
