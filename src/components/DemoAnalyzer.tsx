@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Brain, Gauge, Target, Lightbulb, Sparkles } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 interface AnalysisResult {
   regretType: string;
@@ -18,25 +20,21 @@ const DemoAnalyzer = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [typewriterIndex, setTypewriterIndex] = useState(0);
+  const { toast } = useToast();
 
   const exampleRegret = "I turned down a job offer at a startup three years ago because I thought it was too risky. The company went public last year and all early employees became millionaires. I stayed at my safe corporate job and now feel stuck and underpaid.";
 
-  const mockAnalyze = async (text: string): Promise<AnalysisResult> => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    return {
-      regretType: "Regret by Inaction",
-      regretScore: 8.2,
-      confidence: 0.94,
-      counterfactual: "If you had taken the startup job, you likely would have experienced significant financial growth, gained valuable entrepreneurial experience, and built a network in the innovation ecosystem. While there would have been initial uncertainty and stress, the learning curve would have accelerated your career trajectory exponentially.",
-      insights: [
-        "Action-based regrets tend to fade faster than inaction-based regrets",
-        "Career decisions involving calculated risks often yield higher long-term satisfaction",
-        "Financial security vs. growth potential is a common decision framework conflict",
-        "Future similar decisions could benefit from evaluating worst-case vs. best-case scenarios"
-      ]
-    };
+  const realAnalyze = async (text: string): Promise<AnalysisResult> => {
+    const { data, error } = await supabase.functions.invoke('analyze-regret', {
+      body: { text }
+    });
+
+    if (error) {
+      console.error('Error calling analyze-regret function:', error);
+      throw new Error('Failed to analyze regret. Please try again.');
+    }
+
+    return data as AnalysisResult;
   };
 
   const handleAnalyze = async () => {
@@ -46,7 +44,7 @@ const DemoAnalyzer = () => {
     setResult(null);
     
     try {
-      const analysis = await mockAnalyze(input);
+      const analysis = await realAnalyze(input);
       setResult(analysis);
       setTypewriterIndex(0);
       // Start typewriter animation
@@ -61,6 +59,11 @@ const DemoAnalyzer = () => {
       }, 30);
     } catch (error) {
       console.error("Analysis failed:", error);
+      toast({
+        title: "Analysis Failed",
+        description: error instanceof Error ? error.message : "Failed to analyze decision. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsAnalyzing(false);
     }
