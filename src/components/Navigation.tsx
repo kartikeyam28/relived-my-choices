@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 
@@ -59,6 +60,13 @@ const Navigation = () => {
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-ethnic transition-all duration-300 group-hover:w-full"></span>
               </button>
             ))}
+            <Link 
+              to="/dashboard"
+              className="text-foreground hover:text-primary transition-smooth relative group"
+            >
+              Dashboard
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-ethnic transition-all duration-300 group-hover:w-full"></span>
+            </Link>
             <Button variant="ethnic" size="sm">
               Sign In
             </Button>
@@ -89,6 +97,13 @@ const Navigation = () => {
                   {item.label}
                 </button>
               ))}
+              <Link 
+                to="/dashboard"
+                className="text-left text-foreground hover:text-primary transition-smooth"
+                onClick={() => setIsOpen(false)}
+              >
+                Dashboard
+              </Link>
               <Button variant="ethnic" size="sm" className="self-start">
                 Sign In
               </Button>

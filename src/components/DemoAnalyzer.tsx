@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,6 +22,7 @@ const DemoAnalyzer = () => {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [typewriterIndex, setTypewriterIndex] = useState(0);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const exampleRegret = "I turned down a job offer at a startup three years ago because I thought it was too risky. The company went public last year and all early employees became millionaires. I stayed at my safe corporate job and now feel stuck and underpaid.";
 
@@ -46,17 +48,20 @@ const DemoAnalyzer = () => {
     try {
       const analysis = await realAnalyze(input);
       setResult(analysis);
-      setTypewriterIndex(0);
-      // Start typewriter animation
-      const interval = setInterval(() => {
-        setTypewriterIndex(prev => {
-          if (prev >= analysis.counterfactual.length) {
-            clearInterval(interval);
-            return prev;
-          }
-          return prev + 1;
+      
+      // Show success toast and redirect to dashboard
+      toast({
+        title: "Analysis Complete",
+        description: "Redirecting to your personalized dashboard...",
+      });
+      
+      // Redirect to dashboard with analysis results
+      setTimeout(() => {
+        navigate('/dashboard', { 
+          state: { analysisResult: analysis }
         });
-      }, 30);
+      }, 1500);
+      
     } catch (error) {
       console.error("Analysis failed:", error);
       toast({
