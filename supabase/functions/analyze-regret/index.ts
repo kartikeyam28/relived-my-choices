@@ -33,9 +33,7 @@ serve(async (req) => {
 
     console.log('Analyzing regret for text:', text.substring(0, 100) + '...');
 
-  try {
-    console.log('Making OpenAI API call...');
-    
+    // Analyze the regret using OpenAI
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -43,46 +41,38 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
-            content: `You are ReLiveAI, a compassionate AI psychologist specializing in regret analysis using advanced NLP models (RoBERTa, DistilRoBERTa) and psychological principles. Analyze the user's decision/situation with empathy and scientific rigor.
+            content: `You are an AI psychologist specializing in regret analysis. Analyze the provided text and respond with a JSON object containing:
 
-Determine the regret classification and provide therapeutic insights based on counterfactual thinking theory and action vs inaction regret research.
+1. "regretType": One of "No Regret", "Regret by Action", or "Regret by Inaction"
+2. "regretScore": A number from 0-10 indicating regret intensity (0 = no regret, 10 = extreme regret)
+3. "confidence": A decimal from 0-1 indicating your confidence in the analysis
+4. "counterfactual": A detailed alternative scenario narrative (2-3 sentences) exploring what might have happened if they made a different choice
+5. "insights": An array of 3-4 psychological insights about regret patterns, decision-making, or lessons learned
 
-Respond ONLY with valid JSON in this exact format:
-{
-  "label": "string", // One of: "Regret by Action", "Regret by Inaction", "No Regret"
-  "confidence": number, // Integer 0-100 (confidence percentage)
-  "intensity": number, // Float 0-10 (regret intensity score)
-  "reflection": "string", // Empathetic reflection on their experience
-  "perspective": "string", // Alternative perspective or counterfactual scenario
-  "insights": ["string1", "string2", "string3"], // 3 psychological insights
-  "suggestions": ["string1", "string2"] // 2 growth-oriented suggestions
-}
+Base your analysis on established psychological research about regret, counterfactual thinking, and decision-making. Be empathetic and supportive in tone.
 
-Guidelines:
-- Be empathetic, non-judgmental, and supportive
-- Focus on growth and understanding, not prescriptions
-- Use therapeutic language that validates their experience
-- Base insights on psychological research about regret and decision-making
-- Avoid negative or prescriptive wording
-- Remember: "Your reflections remain yours. We provide guidance, not prescriptions."`
+Respond ONLY with valid JSON, no other text.`
           },
           {
             role: 'user',
-            content: `Please analyze this decision/situation: ${text}`
+            content: text
           }
         ],
         temperature: 0.7,
-        max_tokens: 1200,
+        max_tokens: 800
       }),
     });
 
     if (!response.ok) {
       console.error('OpenAI API error:', response.status, await response.text());
-      throw new Error('OpenAI API call failed');
+      return new Response(JSON.stringify({ error: 'Failed to analyze regret' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const data = await response.json();
@@ -91,53 +81,33 @@ Guidelines:
     console.log('OpenAI response:', analysisText);
     
     // Parse the JSON response from OpenAI
-    let analysisResult;
+    let analysis;
     try {
-      analysisResult = JSON.parse(analysisText);
+      analysis = JSON.parse(analysisText);
     } catch (parseError) {
       console.error('Failed to parse OpenAI response as JSON:', analysisText);
-      throw new Error('Invalid JSON response from OpenAI');
+      return new Response(JSON.stringify({ error: 'Invalid response format from AI' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     // Validate the response structure
-    if (!analysisResult.label || typeof analysisResult.confidence !== 'number' || 
-        typeof analysisResult.intensity !== 'number' || !analysisResult.reflection || 
-        !analysisResult.perspective || !Array.isArray(analysisResult.insights) ||
-        !Array.isArray(analysisResult.suggestions)) {
-      console.error('Invalid analysis structure:', analysisResult);
-      throw new Error('Invalid analysis format from OpenAI');
+    if (!analysis.regretType || typeof analysis.regretScore !== 'number' || 
+        typeof analysis.confidence !== 'number' || !analysis.counterfactual || 
+        !Array.isArray(analysis.insights)) {
+      console.error('Invalid analysis structure:', analysis);
+      return new Response(JSON.stringify({ error: 'Invalid analysis format' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    console.log('OpenAI API call successful');
-    return new Response(JSON.stringify(analysisResult), {
+    console.log('Analysis completed successfully:', analysis);
+
+    return new Response(JSON.stringify(analysis), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
-
-  } catch (error) {
-    console.error('Error calling OpenAI API:', error);
-    
-    // Fallback to mock data if API fails
-    const fallbackResult = {
-      label: "Regret by Inaction",
-      confidence: 87,
-      intensity: 6.8,
-      reflection: "Your experience reflects a common human tendency to wonder about paths not taken. These feelings are valid and show your capacity for growth and self-reflection.",
-      perspective: "If you had moved forward with that decision, you might have faced challenges that would have ultimately strengthened your resilience and expanded your comfort zone. Sometimes what feels like a missed opportunity was actually perfect timing for where you are now.",
-      insights: [
-        "Inaction regret often feels more persistent because our minds tend to idealize outcomes we didn't experience, overlooking potential difficulties.",
-        "Your hesitation may have been intuitive wisdom - sometimes our subconscious recognizes when we're not ready for certain experiences.",
-        "This reflection shows emotional intelligence and the ability to learn from experience, which are valuable traits for future decisions."
-      ],
-      suggestions: [
-        "Consider what this experience taught you about your values and decision-making process for future opportunities.",
-        "Practice self-compassion - acknowledge that you made the best decision with the information and emotional state you had at the time."
-      ]
-    };
-
-    return new Response(JSON.stringify(fallbackResult), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  }
 
   } catch (error) {
     console.error('Error in analyze-regret function:', error);

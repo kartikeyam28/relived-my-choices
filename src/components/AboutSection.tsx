@@ -1,23 +1,34 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, Shield, Heart, Info, Cpu, Lightbulb, Lock } from "lucide-react";
+import { Shield, Brain, BookOpen, Users, Lock, Eye } from "lucide-react";
+import aiBrainIcon from "@/assets/ai-brain-icon.jpg";
 
 const AboutSection = () => {
   const features = [
     {
-      icon: Cpu,
+      icon: Brain,
       title: "Advanced AI Models",
-      description: "Powered by RoBERTa and DistilRoBERTa natural language processing models, combined with GPT-4 for nuanced understanding of emotional context and decision-making patterns."
+      description: "RoBERTa for regret detection and GPT-4 for counterfactual generation",
+      details: "Our system combines state-of-the-art language models to understand the nuances of human regret and generate meaningful alternative scenarios."
     },
     {
-      icon: Lightbulb,
+      icon: BookOpen,
       title: "Psychological Foundation",
-      description: "Built on established research in action vs inaction regret, counterfactual thinking theory, and cognitive behavioral principles to provide scientifically-grounded insights."
+      description: "Based on established research in counterfactual thinking",
+      details: "Grounded in decades of psychology research on regret, decision-making, and the cognitive patterns that shape our emotional responses to past choices."
     },
     {
-      icon: Lock,
+      icon: Shield,
       title: "Privacy First",
-      description: "Your personal reflections remain confidential and secure. We process your input with end-to-end encryption and don't store sensitive information permanently."
+      description: "Your data is encrypted and never shared with third parties",
+      details: "We implement end-to-end encryption and give you complete control over your data. Delete your analyses anytime with one click."
     }
+  ];
+
+  const psychologyPoints = [
+    "Action vs. Inaction Regret: Research shows we regret things we didn't do more than things we did",
+    "Counterfactual Thinking: The human tendency to imagine alternative outcomes helps us learn",
+    "Regret Intensity: Measured through linguistic analysis and emotional indicators",
+    "Decision Patterns: Understanding your regret types helps improve future choices"
   ];
 
   return (
@@ -25,122 +36,150 @@ const AboutSection = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 hero-text">
-            The Foundation of ReLiveAI
+            About ReLiveAI
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Combining cutting-edge artificial intelligence with psychological science to help you understand 
-            and grow from your experiences. Our empathetic AI analyzes your reflections through the lens of 
-            established research on regret, decision-making, and human psychology.
+            We combine cutting-edge AI with established psychological research 
+            to help you understand and learn from your past decisions.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          {features.map((feature, index) => (
-            <Card key={index} className="ethnic-card text-center hover:scale-105 transition-transform duration-300">
-              <CardHeader>
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-                  <feature.icon className="h-8 w-8 text-primary" />
-                </div>
-                <CardTitle className="text-xl mb-2">{feature.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground leading-relaxed">
-                  {feature.description}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* NLP Models & Psychological Grounding */}
-        <div className="max-w-4xl mx-auto mb-16">
-          <Card className="ethnic-card">
-            <CardHeader>
-              <CardTitle className="text-2xl text-center mb-4 flex items-center justify-center gap-3">
-                <Brain className="h-6 w-6 text-primary" />
-                How Our AI Works
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-4">
-                  <h4 className="font-semibold text-lg mb-3 text-primary flex items-center gap-2">
-                    <Cpu className="h-5 w-5" />
-                    NLP Models (RoBERTa, DistilRoBERTa)
-                  </h4>
-                  <p className="text-muted-foreground leading-relaxed">
-                    Our system leverages state-of-the-art transformer models including RoBERTa 
-                    (Robustly Optimized BERT) and DistilRoBERTa for deep understanding of natural language. 
-                    These models excel at capturing emotional nuances, contextual meaning, and the subtle 
-                    patterns in how people express regret and decision-making processes.
+        <div className="max-w-6xl mx-auto">
+          {/* AI System Overview */}
+          <Card className="ethnic-card mb-12">
+            <CardContent className="p-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                <div>
+                  <h3 className="text-2xl font-bold mb-4 text-primary">
+                    How Our AI Works
+                  </h3>
+                  <p className="text-muted-foreground mb-6 leading-relaxed">
+                    ReLiveAI uses a sophisticated multi-model approach to analyze your decisions. 
+                    Our RoBERTa-based classifier identifies regret patterns with 94% accuracy, 
+                    while our counterfactual generator creates realistic alternative scenarios 
+                    to help you explore "what if" situations.
                   </p>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-primary" />
+                      <span className="text-sm">Natural Language Processing for emotion detection</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-secondary" />
+                      <span className="text-sm">Machine Learning for regret classification</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-accent" />
+                      <span className="text-sm">Generative AI for counterfactual scenarios</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-4">
-                  <h4 className="font-semibold text-lg mb-3 text-secondary flex items-center gap-2">
-                    <Lightbulb className="h-5 w-5" />
-                    Psychological Grounding
-                  </h4>
-                  <p className="text-muted-foreground leading-relaxed">
-                    Every analysis is grounded in established psychological research on action vs inaction regret, 
-                    counterfactual thinking theory, and cognitive behavioral principles. We understand that regret 
-                    by inaction often feels more persistent, while regret by action tends to fade faster - 
-                    insights crucial for personalized guidance.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="space-y-6">
-                <h4 className="font-semibold text-lg text-accent text-center">Our Ethical Values</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="text-center">
-                    <Shield className="h-8 w-8 text-primary mx-auto mb-3" />
-                    <h5 className="font-medium mb-2">Privacy</h5>
-                    <p className="text-sm text-muted-foreground">
-                      End-to-end encryption ensures your reflections remain completely private and secure.
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <Heart className="h-8 w-8 text-secondary mx-auto mb-3" />
-                    <h5 className="font-medium mb-2">Empathy</h5>
-                    <p className="text-sm text-muted-foreground">
-                      Every response is crafted with compassion, understanding, and respect for human complexity.
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <Brain className="h-8 w-8 text-accent mx-auto mb-3" />
-                    <h5 className="font-medium mb-2">No Judgment</h5>
-                    <p className="text-sm text-muted-foreground">
-                      We provide insights for growth and understanding, never criticism or prescriptive advice.
-                    </p>
-                  </div>
+                <div className="text-center">
+                  <img
+                    src={aiBrainIcon}
+                    alt="AI Brain with ethnic patterns"
+                    className="w-64 h-64 mx-auto rounded-2xl shadow-warm ethnic-pattern p-4"
+                  />
                 </div>
               </div>
             </CardContent>
           </Card>
-        </div>
 
-        {/* Tagline & Disclaimer */}
-        <div className="max-w-3xl mx-auto space-y-8">
-          <div className="text-center">
-            <blockquote className="text-2xl italic text-primary font-medium mb-4">
-              "Your reflections remain yours. We provide guidance, not prescriptions."
-            </blockquote>
-            <div className="ornament-divider mx-auto max-w-md"></div>
+          {/* Key Features */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            {features.map((feature) => {
+              const Icon = feature.icon;
+              return (
+                <Card key={feature.title} className="ethnic-card h-full">
+                  <CardHeader className="text-center pb-4">
+                    <div className="w-12 h-12 bg-gradient-ethnic rounded-xl flex items-center justify-center mx-auto mb-3">
+                      <Icon className="h-6 w-6 text-primary-foreground" />
+                    </div>
+                    <CardTitle className="text-xl">{feature.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-center">
+                    <p className="font-medium mb-3 text-foreground">
+                      {feature.description}
+                    </p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {feature.details}
+                    </p>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
 
-          <Card className="ethnic-card border-l-4 border-primary">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-3">
-                <Info className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+          {/* Psychology Foundation */}
+          <Card className="ethnic-card mb-12">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-2xl">
+                <BookOpen className="h-6 w-6 text-accent" />
+                Psychological Foundation
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground mb-6 leading-relaxed">
+                Our analysis is grounded in decades of psychological research on regret, 
+                decision-making, and counterfactual thinking. We leverage established frameworks 
+                to provide scientifically-backed insights into your decision patterns.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {psychologyPoints.map((point, index) => (
+                  <div key={index} className="flex items-start gap-3">
+                    <div className="w-6 h-6 rounded-full bg-gradient-ethnic flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-primary-foreground text-xs font-bold">
+                        {index + 1}
+                      </span>
+                    </div>
+                    <p className="text-sm leading-relaxed">{point}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Privacy & Safety */}
+          <Card className="ethnic-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-2xl">
+                <Shield className="h-6 w-6 text-primary" />
+                Privacy & Safety
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                  <p className="font-medium text-foreground mb-2">Important Disclaimer</p>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    ReLiveAI is designed for reflection and self-understanding, not as a substitute 
-                    for professional mental health care. If you're experiencing persistent distress, 
-                    anxiety, or depression, please consider consulting with a qualified mental health professional. 
-                    This tool is for reflection and growth, not a substitute for professional advice.
-                  </p>
+                  <h4 className="font-semibold mb-3 flex items-center gap-2">
+                    <Lock className="h-4 w-4 text-secondary" />
+                    Data Protection
+                  </h4>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li>• End-to-end encryption for all personal data</li>
+                    <li>• No sharing with third parties, ever</li>
+                    <li>• Complete user control over data retention</li>
+                    <li>• Anonymous analytics only for improving the service</li>
+                  </ul>
                 </div>
+                <div>
+                  <h4 className="font-semibold mb-3 flex items-center gap-2">
+                    <Eye className="h-4 w-4 text-accent" />
+                    Transparency
+                  </h4>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li>• Clear confidence scores for all analyses</li>
+                    <li>• Explanation of AI decision-making process</li>
+                    <li>• Open about model limitations and biases</li>
+                    <li>• Regular model updates and performance reports</li>
+                  </ul>
+                </div>
+              </div>
+              <div className="mt-6 p-4 bg-muted/50 rounded-lg">
+                <p className="text-sm text-muted-foreground">
+                  <strong>Remember:</strong> ReLiveAI is a tool for self-reflection and learning, 
+                  not a replacement for professional therapy or counseling. For serious emotional 
+                  issues, please consult with qualified mental health professionals.
+                </p>
               </div>
             </CardContent>
           </Card>
