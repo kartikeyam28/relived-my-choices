@@ -67,9 +67,11 @@ const Navigation = () => {
               Dashboard
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-ethnic transition-all duration-300 group-hover:w-full"></span>
             </Link>
-            <Button variant="ethnic" size="sm">
-              Sign In
-            </Button>
+            <Link to="/auth">
+              <Button variant="ethnic" size="sm">
+                Sign In
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -104,9 +106,11 @@ const Navigation = () => {
               >
                 Dashboard
               </Link>
-              <Button variant="ethnic" size="sm" className="self-start">
-                Sign In
-              </Button>
+              <Link to="/auth" onClick={() => setIsOpen(false)}>
+                <Button variant="ethnic" size="sm" className="self-start">
+                  Sign In
+                </Button>
+              </Link>
             </div>
           </div>
         )}
