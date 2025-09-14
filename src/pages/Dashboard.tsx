@@ -4,14 +4,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { Brain, ArrowLeft, Target, Lightbulb, TrendingUp } from "lucide-react";
+import { Brain, ArrowLeft, Target, Lightbulb, TrendingUp, Heart, CheckCircle } from "lucide-react";
+import TypewriterText from "@/components/TypewriterText";
 
 interface AnalysisResult {
-  regretType: string;
-  regretScore: number;
+  label: string;
   confidence: number;
-  counterfactual: string;
+  intensity: number;
+  reflection: string;
+  perspective: string;
   insights: string[];
+  suggestions: string[];
 }
 
 const Dashboard = () => {
@@ -41,19 +44,19 @@ const Dashboard = () => {
 
   // Data for charts
   const regretScoreData = [
-    { name: 'Your Score', value: result.regretScore },
+    { name: 'Your Score', value: result.intensity },
     { name: 'Average', value: 5.2 },
     { name: 'Maximum', value: 10 }
   ];
 
   const regretTypeData = [
-    { name: 'Regret by Action', value: result.regretType === 'Regret by Action' ? 1 : 0, color: '#ef4444' },
-    { name: 'Regret by Inaction', value: result.regretType === 'Regret by Inaction' ? 1 : 0, color: '#f97316' },
-    { name: 'No Regret', value: result.regretType === 'No Regret' ? 1 : 0, color: '#22c55e' }
+    { name: 'Regret by Action', value: result.label === 'Regret by Action' ? 1 : 0, color: '#ef4444' },
+    { name: 'Regret by Inaction', value: result.label === 'Regret by Inaction' ? 1 : 0, color: '#f97316' },
+    { name: 'No Regret', value: result.label === 'No Regret' ? 1 : 0, color: '#22c55e' }
   ];
 
   const confidenceData = [
-    { name: 'Analysis Confidence', value: result.confidence * 100 }
+    { name: 'Analysis Confidence', value: result.confidence }
   ];
 
   const RegretMeter = ({ score }: { score: number }) => {
@@ -89,7 +92,7 @@ const Dashboard = () => {
         </svg>
         <div className="absolute inset-0 flex items-end justify-center pb-2">
           <div className="text-center">
-            <div className="text-2xl font-bold text-foreground">{score}</div>
+            <div className="text-2xl font-bold text-foreground">{score.toFixed(1)}</div>
             <div className="text-xs text-muted-foreground">/ 10</div>
           </div>
         </div>
@@ -135,7 +138,7 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <Badge variant="secondary" className="text-lg px-4 py-2">
-                {result.regretType}
+                {result.label}
               </Badge>
             </CardContent>
           </Card>
@@ -146,7 +149,7 @@ const Dashboard = () => {
               <CardTitle>Regret Intensity</CardTitle>
             </CardHeader>
             <CardContent>
-              <RegretMeter score={result.regretScore} />
+              <RegretMeter score={result.intensity} />
             </CardContent>
           </Card>
 
@@ -158,12 +161,12 @@ const Dashboard = () => {
             <CardContent>
               <div className="text-center">
                 <div className="text-3xl font-bold text-primary mb-2">
-                  {Math.round(result.confidence * 100)}%
+                  {result.confidence}%
                 </div>
                 <div className="w-full bg-muted rounded-full h-2">
                   <div
                     className="bg-gradient-ethnic h-2 rounded-full transition-all duration-1000"
-                    style={{ width: `${result.confidence * 100}%` }}
+                    style={{ width: `${result.confidence}%` }}
                   />
                 </div>
               </div>
@@ -254,39 +257,94 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        {/* Counterfactual Analysis */}
-        <Card className="ethnic-card mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Lightbulb className="h-5 w-5 text-accent" />
-              What If Scenario
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="bg-muted/50 rounded-lg p-6">
-              <p className="text-foreground leading-relaxed">{result.counterfactual}</p>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Reflection & Perspective */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <Card className="ethnic-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Heart className="h-5 w-5 text-secondary" />
+                Your Reflection
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="bg-muted/30 rounded-lg p-6">
+                <p className="text-foreground leading-relaxed">{result.reflection}</p>
+              </div>
+            </CardContent>
+          </Card>
 
-        {/* Insights */}
-        <Card className="ethnic-card">
-          <CardHeader>
-            <CardTitle>Psychological Insights</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {result.insights.map((insight, index) => (
-                <div key={index} className="bg-muted/30 rounded-lg p-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
-                    <p className="text-sm leading-relaxed">{insight}</p>
+          <Card className="ethnic-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Lightbulb className="h-5 w-5 text-accent" />
+                Alternative Perspective
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="bg-muted/50 rounded-lg p-6">
+                <TypewriterText 
+                  text={result.perspective}
+                  speed={30}
+                  delay={500}
+                  className="text-foreground leading-relaxed block"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Insights & Suggestions */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="ethnic-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Brain className="h-5 w-5 text-primary" />
+                Psychological Insights
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {result.insights.map((insight, index) => (
+                  <div key={index} className="bg-muted/30 rounded-lg p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
+                      <p className="text-sm leading-relaxed">{insight}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="ethnic-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-accent" />
+                Growth Suggestions
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {result.suggestions.map((suggestion, index) => (
+                  <div key={index} className="bg-accent/10 rounded-lg p-4 border-l-4 border-accent">
+                    <div className="flex items-start gap-3">
+                      <CheckCircle className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+                      <p className="text-sm leading-relaxed">{suggestion}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Disclaimer */}
+        <div className="mt-8 text-center">
+          <div className="ornament-divider mx-auto max-w-md mb-6"></div>
+          <p className="text-sm text-muted-foreground italic">
+            "This tool is for reflection and growth, not a substitute for professional advice."
+          </p>
+        </div>
       </div>
     </div>
   );

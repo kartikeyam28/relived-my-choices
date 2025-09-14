@@ -134,21 +134,28 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="border-t border-border/50 pt-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-muted-foreground">
-              © {currentYear} ReLiveAI. All rights reserved.
-            </p>
-            
-            {/* Made in India */}
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">Made in India</span>
-              <span className="text-lg">🇮🇳</span>
-              <span className="text-muted-foreground">with</span>
-              <Heart className="h-4 w-4 text-red-500 fill-current" />
-              <span className="text-muted-foreground">AI and Care</span>
+        {/* Ornamental Divider */}
+        <div className="ornament-divider mx-auto max-w-lg mb-8"></div>
+        
+        <div className="border-t border-border/50 pt-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <p className="text-sm text-muted-foreground">
+                © 2024 ReLiveAI. All rights reserved.
+              </p>
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <button onClick={() => scrollToSection('privacy')} className="hover:text-primary transition-colors">
+                  Privacy Policy
+                </button>
+                <span>|</span>
+                <button onClick={() => scrollToSection('contact')} className="hover:text-primary transition-colors">
+                  Contact
+                </button>
+              </div>
             </div>
+            <p className="text-sm text-muted-foreground flex items-center gap-2 font-medium">
+              Made in India 🇮🇳 with AI and Care
+            </p>
           </div>
         </div>
       </div>

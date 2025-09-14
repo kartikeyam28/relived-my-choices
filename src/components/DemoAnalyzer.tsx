@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import TypewriterText from "@/components/TypewriterText";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Brain, Gauge, Target, Lightbulb, Sparkles } from "lucide-react";
@@ -9,11 +10,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 
 interface AnalysisResult {
-  regretType: string;
-  regretScore: number;
+  label: string;
   confidence: number;
-  counterfactual: string;
+  intensity: number;
+  reflection: string;
+  perspective: string;
   insights: string[];
+  suggestions: string[];
 }
 
 const DemoAnalyzer = () => {
@@ -209,51 +212,51 @@ const DemoAnalyzer = () => {
 
               {result && (
                 <div className="space-y-6">
-                  {/* Regret Type */}
-                  <div>
-                    <h4 className="font-semibold mb-2">Regret Type</h4>
-                    <Badge variant="secondary" className="text-sm">
-                      {result.regretType}
-                    </Badge>
-                  </div>
+                   {/* Regret Type */}
+                   <div>
+                     <h4 className="font-semibold mb-2">Regret Type</h4>
+                     <Badge variant="secondary" className="text-sm">
+                       {result.label}
+                     </Badge>
+                   </div>
 
-                  {/* Regret Meter */}
-                  <div>
-                    <h4 className="font-semibold mb-3">Regret Intensity</h4>
-                    <RegretMeter score={result.regretScore} />
-                  </div>
+                   {/* Regret Meter */}
+                   <div>
+                     <h4 className="font-semibold mb-3">Regret Intensity</h4>
+                     <RegretMeter score={result.intensity} />
+                   </div>
 
-                  {/* Confidence */}
-                  <div>
-                    <h4 className="font-semibold mb-2">Confidence</h4>
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 bg-muted rounded-full h-2">
-                        <div
-                          className="bg-gradient-ethnic h-2 rounded-full transition-all duration-1000"
-                          style={{ width: `${result.confidence * 100}%` }}
-                        />
-                      </div>
-                      <span className="text-sm font-medium">
-                        {Math.round(result.confidence * 100)}%
-                      </span>
-                    </div>
-                  </div>
+                   {/* Confidence */}
+                   <div>
+                     <h4 className="font-semibold mb-2">Confidence</h4>
+                     <div className="flex items-center gap-2">
+                       <div className="flex-1 bg-muted rounded-full h-2">
+                         <div
+                           className="bg-gradient-ethnic h-2 rounded-full transition-all duration-1000"
+                           style={{ width: `${result.confidence}%` }}
+                         />
+                       </div>
+                       <span className="text-sm font-medium">
+                         {result.confidence}%
+                       </span>
+                     </div>
+                   </div>
 
-                  {/* Counterfactual */}
-                  <div>
-                    <h4 className="font-semibold mb-3 flex items-center gap-2">
-                      <Lightbulb className="h-4 w-4 text-accent" />
-                      What If Scenario
-                    </h4>
-                    <div className="bg-muted/50 rounded-lg p-4">
-                      <p className="text-sm leading-relaxed">
-                        {result.counterfactual.slice(0, typewriterIndex)}
-                        {typewriterIndex < result.counterfactual.length && (
-                          <span className="animate-pulse">|</span>
-                        )}
-                      </p>
-                    </div>
-                  </div>
+                   {/* Alternative Perspective */}
+                   <div>
+                     <h4 className="font-semibold mb-3 flex items-center gap-2">
+                       <Lightbulb className="h-4 w-4 text-accent" />
+                       Alternative Perspective
+                     </h4>
+                     <div className="bg-muted/50 rounded-lg p-4">
+                       <TypewriterText 
+                         text={result.perspective}
+                         speed={30}
+                         delay={500}
+                         className="text-sm leading-relaxed block"
+                       />
+                     </div>
+                   </div>
 
                   {/* Insights */}
                   <div>
