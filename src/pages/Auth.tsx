@@ -96,12 +96,12 @@ const Auth = () => {
         setError(error.message);
       }
     } else {
-      console.log('Sign in successful, navigating to home...');
+      console.log('Sign in successful, navigating to dashboard...');
       toast({
         title: "Welcome back!",
         description: "You've been successfully signed in.",
       });
-      navigate('/');
+      navigate('/dashboard');
     }
   };
 
