@@ -30,13 +30,28 @@ const DemoAnalyzer = () => {
   const exampleRegret = "I turned down a job offer at a startup three years ago because I thought it was too risky. The company went public last year and all early employees became millionaires. I stayed at my safe corporate job and now feel stuck and underpaid.";
 
   const realAnalyze = async (text: string): Promise<AnalysisResult> => {
+    console.log('Calling analyze-regret function with text:', text.substring(0, 100) + '...');
+    
     const { data, error } = await supabase.functions.invoke('analyze-regret', {
       body: { text }
     });
 
+    console.log('Function response:', { data, error });
+
     if (error) {
-      console.error('Error calling analyze-regret function:', error);
-      throw new Error('Failed to analyze regret. Please try again.');
+      console.error('Supabase function error:', error);
+      throw new Error(`Function error: ${error.message}`);
+    }
+
+    // Check if the response contains an error from the edge function
+    if (data && data.error) {
+      console.error('Edge function returned error:', data);
+      throw new Error(`API Error: ${data.error}${data.details ? ` - ${data.details}` : ''}`);
+    }
+
+    if (!data || !data.label) {
+      console.error('Invalid response format:', data);
+      throw new Error('Invalid response from analysis service');
     }
 
     return data as AnalysisResult;

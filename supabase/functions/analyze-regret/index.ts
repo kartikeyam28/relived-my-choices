@@ -126,26 +126,15 @@ PROFESSIONAL STANDARDS:
 
   } catch (error) {
     console.error('Error calling OpenAI API:', error);
+    console.error('Error details:', error.message, error.stack);
     
-    // Fallback to mock data if API fails
-    const fallbackResult = {
-      label: "Regret by Inaction",
-      confidence: 87,
-      intensity: 6.8,
-      reflection: "Your experience reflects a common human tendency to wonder about paths not taken. These feelings are valid and show your capacity for growth and self-reflection.",
-      perspective: "If you had moved forward with that decision, you might have faced challenges that would have ultimately strengthened your resilience and expanded your comfort zone. Sometimes what feels like a missed opportunity was actually perfect timing for where you are now.",
-      insights: [
-        "Inaction regret often feels more persistent because our minds tend to idealize outcomes we didn't experience, overlooking potential difficulties.",
-        "Your hesitation may have been intuitive wisdom - sometimes our subconscious recognizes when we're not ready for certain experiences.",
-        "This reflection shows emotional intelligence and the ability to learn from experience, which are valuable traits for future decisions."
-      ],
-      suggestions: [
-        "Consider what this experience taught you about your values and decision-making process for future opportunities.",
-        "Practice self-compassion - acknowledge that you made the best decision with the information and emotional state you had at the time."
-      ]
-    };
-
-    return new Response(JSON.stringify(fallbackResult), {
+    // Return the actual error instead of fallback data
+    return new Response(JSON.stringify({ 
+      error: 'OpenAI API call failed', 
+      details: error.message,
+      hasApiKey: !!openaiApiKey 
+    }), {
+      status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
