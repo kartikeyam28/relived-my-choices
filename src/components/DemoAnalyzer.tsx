@@ -30,28 +30,13 @@ const DemoAnalyzer = () => {
   const exampleRegret = "I turned down a job offer at a startup three years ago because I thought it was too risky. The company went public last year and all early employees became millionaires. I stayed at my safe corporate job and now feel stuck and underpaid.";
 
   const realAnalyze = async (text: string): Promise<AnalysisResult> => {
-    console.log('Calling analyze-regret function with text:', text.substring(0, 100) + '...');
-    
     const { data, error } = await supabase.functions.invoke('analyze-regret', {
       body: { text }
     });
 
-    console.log('Function response:', { data, error });
-
     if (error) {
-      console.error('Supabase function error:', error);
-      throw new Error(`Function error: ${error.message}`);
-    }
-
-    // Check if the response contains an error from the edge function
-    if (data && data.error) {
-      console.error('Edge function returned error:', data);
-      throw new Error(`API Error: ${data.error}${data.details ? ` - ${data.details}` : ''}`);
-    }
-
-    if (!data || !data.label) {
-      console.error('Invalid response format:', data);
-      throw new Error('Invalid response from analysis service');
+      console.error('Error calling analyze-regret function:', error);
+      throw new Error('Failed to analyze regret. Please try again.');
     }
 
     return data as AnalysisResult;
@@ -82,20 +67,9 @@ const DemoAnalyzer = () => {
       
     } catch (error) {
       console.error("Analysis failed:", error);
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : "Failed to analyze decision. Please try again.";
-      
-      // Show more detailed error information
-      console.error("Detailed error:", {
-        message: errorMessage,
-        stack: error instanceof Error ? error.stack : undefined,
-        error: error
-      });
-      
       toast({
         title: "Analysis Failed",
-        description: `${errorMessage}. Try testing the API connection first.`,
+        description: error instanceof Error ? error.message : "Failed to analyze decision. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -105,50 +79,6 @@ const DemoAnalyzer = () => {
 
   const handleExample = () => {
     setInput(exampleRegret);
-  };
-
-  const handleTestAPI = async () => {
-    setIsAnalyzing(true);
-    
-    try {
-      console.log('Testing OpenAI API connection...');
-      const { data, error } = await supabase.functions.invoke('test-openai');
-      
-      console.log('Test API response:', { data, error });
-      
-      if (error) {
-        console.error('Test API supabase error:', error);
-        toast({
-          title: "API Test Failed",
-          description: `Supabase Error: ${error.message}`,
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      if (data?.success) {
-        toast({
-          title: "API Test Successful ✅",
-          description: "OpenAI API connection is working properly!",
-        });
-      } else {
-        console.error('Test API failed with data:', data);
-        toast({
-          title: "API Test Failed", 
-          description: data?.error || "Unknown error occurred",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error('Test API catch error:', error);
-      toast({
-        title: "API Test Failed",
-        description: error instanceof Error ? error.message : "Unknown error occurred",
-        variant: "destructive",
-      });
-    } finally {
-      setIsAnalyzing(false);
-    }
   };
 
   const RegretMeter = ({ score }: { score: number }) => {
@@ -252,15 +182,6 @@ const DemoAnalyzer = () => {
                   disabled={isAnalyzing}
                 >
                   Try Example
-                </Button>
-                
-                <Button
-                  variant="outline"
-                  onClick={handleTestAPI}
-                  disabled={isAnalyzing}
-                  className="min-w-fit"
-                >
-                  Test API
                 </Button>
               </div>
             </CardContent>

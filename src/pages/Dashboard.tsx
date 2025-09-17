@@ -4,9 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { Brain, ArrowLeft, Target, Lightbulb, TrendingUp, Heart, CheckCircle, User, History } from "lucide-react";
+import { Brain, ArrowLeft, Target, Lightbulb, TrendingUp, Heart, CheckCircle } from "lucide-react";
 import TypewriterText from "@/components/TypewriterText";
-import { supabase } from "@/integrations/supabase/client";
 
 interface AnalysisResult {
   label: string;
@@ -22,172 +21,22 @@ const Dashboard = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [result, setResult] = useState<AnalysisResult | null>(null);
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check authentication status
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate('/auth');
-        return;
-      }
-      setUser(session.user);
-      setLoading(false);
-    };
-
-    checkAuth();
-
-    // If there's an analysis result from navigation, use it
     if (location.state?.analysisResult) {
       setResult(location.state.analysisResult);
+    } else {
+      // Redirect to home if no analysis result
+      navigate('/');
     }
   }, [location.state, navigate]);
 
-  if (loading) {
+  if (!result) {
     return (
       <div className="min-h-screen bg-gradient-subtle flex items-center justify-center">
         <div className="text-center">
           <Brain className="h-16 w-16 mx-auto mb-4 text-primary animate-pulse" />
-          <p className="text-muted-foreground">Loading dashboard...</p>
-        </div>
-      </div>
-    );
-  }
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate('/');
-  };
-
-  // If no analysis result, show user dashboard
-  if (!result) {
-    return (
-      <div className="min-h-screen bg-gradient-subtle">
-        {/* Header */}
-        <div className="border-b bg-background/95 backdrop-blur sticky top-0 z-50">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <Button variant="ghost" onClick={() => navigate('/')}>
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Home
-                </Button>
-                <div>
-                  <h1 className="text-2xl font-bold hero-text">User Dashboard</h1>
-                  <p className="text-muted-foreground">Welcome back, {user?.email}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Link to="/">
-                  <Button variant="ethnic">
-                    <Brain className="h-4 w-4 mr-2" />
-                    New Analysis
-                  </Button>
-                </Link>
-                <Button variant="outline" onClick={handleSignOut}>
-                  Sign Out
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="container mx-auto px-4 py-8">
-          {/* User Profile Section */}
-          <Card className="ethnic-card mb-8">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5 text-primary" />
-                Profile Information
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">Email</p>
-                  <p className="font-medium">{user?.email}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Member Since</p>
-                  <p className="font-medium">{new Date(user?.created_at).toLocaleDateString()}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Quick Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            <Card className="ethnic-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Brain className="h-5 w-5 text-primary" />
-                  Start New Analysis
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">Analyze a new regret or situation for insights and growth.</p>
-                <Link to="/">
-                  <Button className="w-full" variant="ethnic">
-                    Begin Analysis
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-
-            <Card className="ethnic-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <History className="h-5 w-5 text-secondary" />
-                  Analysis History
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">View your previous analyses and track your growth journey.</p>
-                <Button className="w-full" variant="outline" disabled>
-                  Coming Soon
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="ethnic-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-accent" />
-                  Progress Insights
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">Track patterns and improvements in your emotional wellbeing.</p>
-                <Button className="w-full" variant="outline" disabled>
-                  Coming Soon
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Welcome Message */}
-          <Card className="ethnic-card">
-            <CardContent className="py-8">
-              <div className="text-center">
-                <Brain className="h-16 w-16 mx-auto mb-4 text-primary" />
-                <h2 className="text-2xl font-bold mb-4">Welcome to Your Personal Growth Dashboard</h2>
-                <p className="text-muted-foreground max-w-2xl mx-auto">
-                  This is your personal space for reflection and growth. Start by analyzing a regret or challenging situation 
-                  to gain valuable insights and develop healthier perspectives on your experiences.
-                </p>
-                <div className="mt-6">
-                  <Link to="/">
-                    <Button variant="ethnic" size="lg">
-                      <Brain className="h-5 w-5 mr-2" />
-                      Start Your First Analysis
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <p className="text-muted-foreground">Loading analysis...</p>
         </div>
       </div>
     );

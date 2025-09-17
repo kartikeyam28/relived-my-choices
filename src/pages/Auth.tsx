@@ -78,30 +78,25 @@ const Auth = () => {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
-    console.log('Attempting sign in with email:', email);
-
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    console.log('Sign in response:', { data, error });
     setLoading(false);
 
     if (error) {
-      console.error('Sign in error:', error);
       if (error.message.includes('Invalid login credentials')) {
         setError('Invalid email or password. Please check your credentials and try again.');
       } else {
         setError(error.message);
       }
     } else {
-      console.log('Sign in successful, navigating to dashboard...');
       toast({
         title: "Welcome back!",
         description: "You've been successfully signed in.",
       });
-      navigate('/dashboard');
+      navigate('/');
     }
   };
 
