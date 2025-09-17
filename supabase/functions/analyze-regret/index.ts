@@ -24,12 +24,14 @@ serve(async (req) => {
 
     const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openaiApiKey) {
-      console.error('OpenAI API key not found');
-      return new Response(JSON.stringify({ error: 'OpenAI API key not configured' }), {
+      console.error('OpenAI API key not found in environment variables');
+      return new Response(JSON.stringify({ error: 'OpenAI API key not configured. Please check your Supabase secrets.' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+    
+    console.log('OpenAI API key found, length:', openaiApiKey.length);
 
     console.log('Analyzing regret for text:', text.substring(0, 100) + '...');
 
