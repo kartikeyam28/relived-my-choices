@@ -82,9 +82,20 @@ const DemoAnalyzer = () => {
       
     } catch (error) {
       console.error("Analysis failed:", error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "Failed to analyze decision. Please try again.";
+      
+      // Show more detailed error information
+      console.error("Detailed error:", {
+        message: errorMessage,
+        stack: error instanceof Error ? error.stack : undefined,
+        error: error
+      });
+      
       toast({
         title: "Analysis Failed",
-        description: error instanceof Error ? error.message : "Failed to analyze decision. Please try again.",
+        description: `${errorMessage}. Try testing the API connection first.`,
         variant: "destructive",
       });
     } finally {
@@ -100,30 +111,36 @@ const DemoAnalyzer = () => {
     setIsAnalyzing(true);
     
     try {
+      console.log('Testing OpenAI API connection...');
       const { data, error } = await supabase.functions.invoke('test-openai');
       
+      console.log('Test API response:', { data, error });
+      
       if (error) {
+        console.error('Test API supabase error:', error);
         toast({
           title: "API Test Failed",
-          description: `Error: ${error.message}`,
+          description: `Supabase Error: ${error.message}`,
           variant: "destructive",
         });
         return;
       }
       
-      if (data.success) {
+      if (data?.success) {
         toast({
-          title: "API Test Successful",
+          title: "API Test Successful ✅",
           description: "OpenAI API connection is working properly!",
         });
       } else {
+        console.error('Test API failed with data:', data);
         toast({
           title: "API Test Failed", 
-          description: data.error || "Unknown error occurred",
+          description: data?.error || "Unknown error occurred",
           variant: "destructive",
         });
       }
     } catch (error) {
+      console.error('Test API catch error:', error);
       toast({
         title: "API Test Failed",
         description: error instanceof Error ? error.message : "Unknown error occurred",
