@@ -96,6 +96,44 @@ const DemoAnalyzer = () => {
     setInput(exampleRegret);
   };
 
+  const handleTestAPI = async () => {
+    setIsAnalyzing(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('test-openai');
+      
+      if (error) {
+        toast({
+          title: "API Test Failed",
+          description: `Error: ${error.message}`,
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      if (data.success) {
+        toast({
+          title: "API Test Successful",
+          description: "OpenAI API connection is working properly!",
+        });
+      } else {
+        toast({
+          title: "API Test Failed", 
+          description: data.error || "Unknown error occurred",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "API Test Failed",
+        description: error instanceof Error ? error.message : "Unknown error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
   const RegretMeter = ({ score }: { score: number }) => {
     const percentage = (score / 10) * 100;
     const rotation = (percentage / 100) * 180;
@@ -197,6 +235,15 @@ const DemoAnalyzer = () => {
                   disabled={isAnalyzing}
                 >
                   Try Example
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  onClick={handleTestAPI}
+                  disabled={isAnalyzing}
+                  className="min-w-fit"
+                >
+                  Test API
                 </Button>
               </div>
             </CardContent>
