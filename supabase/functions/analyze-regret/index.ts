@@ -43,23 +43,23 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4',
+        model: 'gpt-5-2025-08-07',
         messages: [
           {
             role: 'system',
-            content: `You are ReLiveAI, a compassionate AI psychologist specializing in regret analysis using advanced NLP models (RoBERTa, DistilRoBERTa) and psychological principles. Analyze the user's decision/situation with empathy and scientific rigor.
+            content: `You are ReLiveAI, a compassionate AI psychologist specializing in regret analysis using advanced NLP models and psychological principles. Analyze the user's decision/situation with empathy and scientific rigor.
 
 Determine the regret classification and provide therapeutic insights based on counterfactual thinking theory and action vs inaction regret research.
 
 Respond ONLY with valid JSON in this exact format:
 {
-  "label": "string", // One of: "Regret by Action", "Regret by Inaction", "No Regret"
-  "confidence": number, // Integer 0-100 (confidence percentage)
-  "intensity": number, // Float 0-10 (regret intensity score)
-  "reflection": "string", // Empathetic reflection on their experience
-  "perspective": "string", // Alternative perspective or counterfactual scenario
-  "insights": ["string1", "string2", "string3"], // 3 psychological insights
-  "suggestions": ["string1", "string2"] // 2 growth-oriented suggestions
+  "label": "string",
+  "confidence": number,
+  "intensity": number,
+  "reflection": "string",
+  "perspective": "string",
+  "insights": ["string1", "string2", "string3"],
+  "suggestions": ["string1", "string2"]
 }
 
 Guidelines:
@@ -67,16 +67,16 @@ Guidelines:
 - Focus on growth and understanding, not prescriptions
 - Use therapeutic language that validates their experience
 - Base insights on psychological research about regret and decision-making
-- Avoid negative or prescriptive wording
-- Remember: "Your reflections remain yours. We provide guidance, not prescriptions."`
+- label must be one of: "Regret by Action", "Regret by Inaction", "No Regret"
+- confidence should be 0-100
+- intensity should be 0-10`
           },
           {
             role: 'user',
             content: `Please analyze this decision/situation: ${text}`
           }
         ],
-        temperature: 0.7,
-        max_tokens: 1200,
+        max_completion_tokens: 1200,
       }),
     });
 

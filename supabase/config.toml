@@ -1,1 +1,4 @@
 project_id = "yyryrdazzekirwtxztva"
+
+[functions.analyze-regret]
+verify_jwt = false
