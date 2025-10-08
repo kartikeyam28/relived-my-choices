@@ -17,6 +17,20 @@ interface AnalysisResult {
   perspective: string;
   insights: string[];
   suggestions: string[];
+  affectedDomain: string;
+  emotionalTone: {
+    primary: string;
+    secondary: string[];
+  };
+  currentImpact: string;
+  futureProjection: string;
+  irreversibleLimitation: string;
+  threatAnalysis: {
+    stress: { level: string; score: number };
+    anxiety: { level: string; score: number };
+    motivationLoss: { level: string; score: number };
+    healthRisk: { level: string; score: number };
+  };
 }
 
 const DemoAnalyzer = () => {
