@@ -35,6 +35,7 @@ interface AnalysisResult {
 
 const DemoAnalyzer = () => {
   const [input, setInput] = useState("");
+  const [apiKey, setApiKey] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [typewriterIndex, setTypewriterIndex] = useState(0);
@@ -45,7 +46,7 @@ const DemoAnalyzer = () => {
 
   const realAnalyze = async (text: string): Promise<AnalysisResult> => {
     const { data, error } = await supabase.functions.invoke('analyze-regret', {
-      body: { text }
+      body: { text, apiKey: apiKey.trim() || undefined }
     });
 
     if (error) {
@@ -169,6 +170,19 @@ const DemoAnalyzer = () => {
                 onChange={(e) => setInput(e.target.value)}
                 className="min-h-32 resize-none border-border/50 focus:border-primary"
               />
+              
+              <div className="space-y-2">
+                <label className="text-sm text-muted-foreground">
+                  API Key (Optional - leave empty to use free credits)
+                </label>
+                <input
+                  type="password"
+                  placeholder="Enter your Lovable AI API key"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  className="w-full px-3 py-2 rounded-md border border-border/50 bg-background focus:border-primary focus:outline-none"
+                />
+              </div>
               
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button

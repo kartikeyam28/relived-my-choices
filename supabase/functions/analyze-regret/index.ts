@@ -13,7 +13,7 @@ serve(async (req) => {
   }
 
   try {
-    const { text } = await req.json();
+    const { text, apiKey } = await req.json();
     
     if (!text || text.trim().length === 0) {
       return new Response(JSON.stringify({ error: 'Text input is required' }), {
@@ -22,11 +22,12 @@ serve(async (req) => {
       });
     }
 
-    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
-    if (!lovableApiKey) {
-      console.error('Lovable API key not found');
-      return new Response(JSON.stringify({ error: 'Lovable API key not configured' }), {
-        status: 500,
+    // Use provided API key or fall back to Lovable API key
+    const effectiveApiKey = apiKey || Deno.env.get('LOVABLE_API_KEY');
+    if (!effectiveApiKey) {
+      console.error('No API key provided and Lovable API key not found');
+      return new Response(JSON.stringify({ error: 'API key not provided' }), {
+        status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
@@ -39,7 +40,7 @@ serve(async (req) => {
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${lovableApiKey}`,
+        'Authorization': `Bearer ${effectiveApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
