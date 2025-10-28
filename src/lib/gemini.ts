@@ -76,12 +76,8 @@ export const analyzeWithGemini = async (text: string): Promise<AnalysisResult> =
 
   const genAI = new GoogleGenerativeAI(key);
   
-  // Models to try in order (fallback strategy)
-  const models = [
-    "gemini-2.5-flash",
-    "gemini-1.5-flash", 
-    "gemini-pro"
-  ];
+  // Use only the requested model: gemini-2.5-flash (no fallbacks)
+  const models = ["gemini-2.5-flash"];
 
   const prompt = `You are ReLiveAI, a compassionate AI psychologist. Analyze this decision with empathy and provide insights.
 
