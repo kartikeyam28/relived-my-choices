@@ -6,8 +6,8 @@ import TypewriterText from "@/components/TypewriterText";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Brain, Gauge, Target, Lightbulb, Sparkles } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { analyzeWithGemini } from "@/lib/gemini";
 
 interface AnalysisResult {
   label: string;
@@ -35,8 +35,8 @@ interface AnalysisResult {
 
 const DemoAnalyzer = () => {
   const [input, setInput] = useState("");
-  const [apiKey, setApiKey] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisProgress, setAnalysisProgress] = useState(0);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [typewriterIndex, setTypewriterIndex] = useState(0);
   const { toast } = useToast();
@@ -45,16 +45,8 @@ const DemoAnalyzer = () => {
   const exampleRegret = "I turned down a job offer at a startup three years ago because I thought it was too risky. The company went public last year and all early employees became millionaires. I stayed at my safe corporate job and now feel stuck and underpaid.";
 
   const realAnalyze = async (text: string): Promise<AnalysisResult> => {
-    const { data, error } = await supabase.functions.invoke('analyze-regret', {
-      body: { text, apiKey: apiKey.trim() || undefined }
-    });
-
-    if (error) {
-      console.error('Error calling analyze-regret function:', error);
-      throw new Error('Failed to analyze regret. Please try again.');
-    }
-
-    return data as AnalysisResult;
+    // Call Gemini API (API key should be set in .env.local)
+    return await analyzeWithGemini(text);
   };
 
   const handleAnalyze = async () => {
@@ -62,9 +54,23 @@ const DemoAnalyzer = () => {
     
     setIsAnalyzing(true);
     setResult(null);
+    setAnalysisProgress(0);
+    
+    // Simulate progress for better UX
+    const progressInterval = setInterval(() => {
+      setAnalysisProgress(prev => {
+        if (prev >= 90) {
+          clearInterval(progressInterval);
+          return 90;
+        }
+        return prev + 10;
+      });
+    }, 300);
     
     try {
       const analysis = await realAnalyze(input);
+      setAnalysisProgress(100);
+      clearInterval(progressInterval);
       setResult(analysis);
       
       // Show success toast and redirect to dashboard
@@ -81,6 +87,8 @@ const DemoAnalyzer = () => {
       }, 1500);
       
     } catch (error) {
+      clearInterval(progressInterval);
+      setAnalysisProgress(0);
       console.error("Analysis failed:", error);
       toast({
         title: "Analysis Failed",
@@ -171,19 +179,6 @@ const DemoAnalyzer = () => {
                 className="min-h-32 resize-none border-border/50 focus:border-primary"
               />
               
-              <div className="space-y-2">
-                <label className="text-sm text-muted-foreground">
-                  API Key (Optional - leave empty to use free credits)
-                </label>
-                <input
-                  type="password"
-                  placeholder="Enter your Lovable AI API key"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  className="w-full px-3 py-2 rounded-md border border-border/50 bg-background focus:border-primary focus:outline-none"
-                />
-              </div>
-              
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button
                   variant="ethnic"
@@ -232,9 +227,28 @@ const DemoAnalyzer = () => {
               )}
 
               {isAnalyzing && (
-                <div className="text-center py-12">
+                <div className="text-center py-12 space-y-4">
                   <Brain className="h-12 w-12 mx-auto mb-4 animate-pulse text-primary" />
                   <p className="text-muted-foreground">AI is analyzing your decision...</p>
+                  <div className="w-full max-w-xs mx-auto">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="flex-1 bg-muted rounded-full h-2 overflow-hidden">
+                        <div
+                          className="bg-gradient-ethnic h-2 rounded-full transition-all duration-300 ease-out"
+                          style={{ width: `${analysisProgress}%` }}
+                        />
+                      </div>
+                      <span className="text-xs font-medium text-muted-foreground">
+                        {analysisProgress}%
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {analysisProgress < 30 && "Processing your decision..."}
+                      {analysisProgress >= 30 && analysisProgress < 60 && "Analyzing patterns..."}
+                      {analysisProgress >= 60 && analysisProgress < 90 && "Generating insights..."}
+                      {analysisProgress >= 90 && "Finalizing analysis..."}
+                    </p>
+                  </div>
                 </div>
               )}
 

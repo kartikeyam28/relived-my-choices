@@ -1,21 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, LogOut, User } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Menu, X } from "lucide-react";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { user, signOut } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -52,8 +42,9 @@ const Navigation = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-ethnic rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">R</span>
+            {/* Temporary: Will show actual logo once logo.png is added to public folder */}
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-400 via-red-400 to-purple-600 flex items-center justify-center shadow-lg">
+              <span className="text-white font-bold text-lg">🧠</span>
             </div>
             <span className="font-bold text-xl hero-text">ReLiveAI</span>
           </div>
@@ -77,38 +68,6 @@ const Navigation = () => {
               Dashboard
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-ethnic transition-all duration-300 group-hover:w-full"></span>
             </Link>
-            
-            {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ethnic" size="sm">
-                    <User className="h-4 w-4 mr-2" />
-                    Account
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium">My Account</p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {user.email}
-                      </p>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={signOut}>
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Sign Out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <Link to="/auth">
-                <Button variant="ethnic" size="sm">
-                  Sign In
-                </Button>
-              </Link>
-            )}
           </div>
 
           {/* Mobile menu button */}
@@ -143,32 +102,6 @@ const Navigation = () => {
               >
                 Dashboard
               </Link>
-              
-              {user ? (
-                <div className="pt-2 border-t border-border space-y-2">
-                  <p className="text-xs text-muted-foreground truncate">
-                    {user.email}
-                  </p>
-                  <Button 
-                    variant="ethnic" 
-                    size="sm" 
-                    className="w-full"
-                    onClick={() => {
-                      signOut();
-                      setIsOpen(false);
-                    }}
-                  >
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Sign Out
-                  </Button>
-                </div>
-              ) : (
-                <Link to="/auth" onClick={() => setIsOpen(false)}>
-                  <Button variant="ethnic" size="sm" className="w-full">
-                    Sign In
-                  </Button>
-                </Link>
-              )}
             </div>
           </div>
         )}

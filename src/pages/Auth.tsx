@@ -7,7 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertCircle, ArrowLeft } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
@@ -19,8 +18,9 @@ const Auth = () => {
   // Check if user is already authenticated and redirect
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
+      // TODO: Replace with actual auth check when backend is ready
+      const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+      if (isAuthenticated) {
         navigate('/');
       }
     };
@@ -43,29 +43,22 @@ const Auth = () => {
       return;
     }
 
-    const redirectUrl = `${window.location.origin}/`;
-
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl
-      }
-    });
-
-    setLoading(false);
-
-    if (error) {
-      if (error.message.includes('already registered')) {
-        setError('This email is already registered. Please sign in instead.');
-      } else {
-        setError(error.message);
-      }
-    } else {
+    // TODO: Replace with actual backend API call when ready
+    // Temporary mock authentication
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('userEmail', email);
+      
       toast({
-        title: "Check your email",
-        description: "We've sent you a confirmation link to complete your registration.",
+        title: "Account created!",
+        description: "Welcome to Relive AI. You can now start analyzing your decisions.",
       });
+      navigate('/');
+    } catch (err) {
+      setError('Failed to create account. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -78,25 +71,29 @@ const Auth = () => {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    setLoading(false);
-
-    if (error) {
-      if (error.message.includes('Invalid login credentials')) {
-        setError('Invalid email or password. Please check your credentials and try again.');
-      } else {
-        setError(error.message);
+    // TODO: Replace with actual backend API call when ready
+    // Temporary mock authentication
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      const storedEmail = localStorage.getItem('userEmail');
+      
+      if (!storedEmail) {
+        setError('No account found. Please sign up first.');
+        setLoading(false);
+        return;
       }
-    } else {
+      
+      localStorage.setItem('isAuthenticated', 'true');
+      
       toast({
         title: "Welcome back!",
         description: "You've been successfully signed in.",
       });
       navigate('/');
+    } catch (err) {
+      setError('Failed to sign in. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 

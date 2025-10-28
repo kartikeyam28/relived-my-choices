@@ -1,22 +1,41 @@
-# Welcome to your Lovable project
+# Welcome to your Relive AI project
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/8511b000-2779-4e2a-8711-f4f4e6eb2c5d
+**URL**: https://relive.ai/projects/8511b000-2779-4e2a-8711-f4f4e6eb2c5d
+
+## Google Gemini API Setup
+
+This project uses Google Gemini AI for regret analysis. 
+
+**To configure the API key:**
+
+1. **Get your API key** from [Google AI Studio](https://aistudio.google.com/app/apikey)
+
+2. **Set up your environment variable:**
+   - Open the `.env.local` file in the project root
+   - Replace `YOUR_API_KEY_HERE` with your actual API key:
+     ```
+     VITE_GEMINI_API_KEY=your_actual_api_key_here
+     ```
+
+3. **Restart the dev server** if it's running
+
+**Note:** The `.env.local` file is already gitignored, so your API key won't be committed to version control.
 
 ## How can I edit this code?
 
 There are several ways of editing your application.
 
-**Use Lovable**
+**Use Relive AI**
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/8511b000-2779-4e2a-8711-f4f4e6eb2c5d) and start prompting.
+Simply visit the [Relive AI Project](https://relive.ai/projects/8511b000-2779-4e2a-8711-f4f4e6eb2c5d) and start prompting.
 
-Changes made via Lovable will be committed automatically to this repo.
+Changes made via Relive AI will be committed automatically to this repo.
 
 **Use your preferred IDE**
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Relive AI.
 
 The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
@@ -62,12 +81,12 @@ This project is built with:
 
 ## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/8511b000-2779-4e2a-8711-f4f4e6eb2c5d) and click on Share -> Publish.
+Simply open [Relive AI](https://relive.ai/projects/8511b000-2779-4e2a-8711-f4f4e6eb2c5d) and click on Share -> Publish.
 
-## Can I connect a custom domain to my Lovable project?
+## Can I connect a custom domain to my Relive AI project?
 
 Yes, you can!
 
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Read more here: [Setting up a custom domain](https://docs.relive.ai/tips-tricks/custom-domain#step-by-step-guide)
