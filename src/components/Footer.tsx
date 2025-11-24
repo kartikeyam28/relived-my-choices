@@ -1,35 +1,94 @@
 import { Heart, Mail, Twitter, Github, Linkedin } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const [openDialog, setOpenDialog] = useState<string | null>(null);
+
+  const dialogContent: Record<string, { title: string; content: string }> = {
+    "product-overview": {
+      title: "Product Overview",
+      content: "Our platform is designed to help individuals, teams, and organizations understand human behavior and decision making with clarity. Built with advanced artificial intelligence and modern interaction design principles, the product delivers accurate insights, actionable analytics, and real-time predictive understanding. From emotion analysis to cognitive pattern mapping, it provides a smooth and intuitive experience that adapts to every user. The product is suitable for educational institutions, corporate environments, researchers, mental health professionals, and end users seeking deeper self-awareness."
+    },
+    "how-it-works": {
+      title: "How It Works",
+      content: "The system operates on a multi-layer architecture that combines data input, behavior modeling, and insight generation. Users begin by interacting with a simple interface or uploading relevant data. The platform then processes the information through its AI engine, which includes natural language understanding, behavioral analysis models, and psychological pattern detection. These components work together to identify trends, predict potential outcomes, and generate meaningful interpretations. The final output is presented in clear dashboards and reports that are easy to understand and ready to share."
+    },
+    "demo": {
+      title: "Try Demo",
+      content: "The interactive demo allows new users to experience the platform in real time. It showcases key features such as instant analysis, personalized summaries, and guided workflows. Visitors can test sample scenarios, upload custom text or data, and view live insights produced by the engine. The demo is optimized to give an accurate representation of the full product without requiring registration or technical expertise."
+    },
+    "about": {
+      title: "About",
+      content: "We are a team of engineers, behavioral scientists, designers, and AI researchers focused on making complex psychological insights accessible and reliable. Our mission is to bridge the gap between human intuition and data-driven understanding. With a commitment to accuracy, transparency, and user empowerment, we continuously improve our models and user experience to support a wide range of applications across industries."
+    },
+    "privacy-policy": {
+      title: "Privacy Policy",
+      content: "We prioritize the privacy of all users and enforce strict data protection standards. All user data is encrypted during storage and transmission. The platform does not share or sell personal information and allows users to control their own data preferences, including retrieval and deletion. Our privacy practices comply with global data protection regulations and undergo regular security reviews."
+    },
+    "terms-of-service": {
+      title: "Terms of Service",
+      content: "The terms of service establish the legal framework for using the platform. They cover acceptable use guidelines, account responsibilities, intellectual property rights, service limitations, and liability boundaries. By using the platform, users agree to follow these rules to maintain safety, transparency, and fairness for all participants."
+    },
+    "contact-us": {
+      title: "Contact Us",
+      content: "For inquiries, partnerships, feedback, or custom project discussions, our team can be reached through email, web forms, or business communication channels. We aim to respond within one business day and ensure that every request is handled with clarity and professionalism."
+    },
+    "faq": {
+      title: "FAQ",
+      content: "The FAQ section provides quick answers to common questions about features, pricing, security, functionality, and account management. It is updated regularly based on user feedback and product improvements, helping visitors find information efficiently without waiting for support responses."
+    },
+    "psychology-research": {
+      title: "Psychology Research",
+      content: "This segment highlights the scientific foundation behind the platform. It includes published papers, real-world studies, and validated models that support the system's accuracy and reliability. The platform is built upon established psychological frameworks and continuously refined through academic collaboration and research trials."
+    },
+    "api-documentation": {
+      title: "API Documentation",
+      content: "Developers can integrate the platform into their own applications using the available APIs. The documentation includes endpoint descriptions, authentication methods, example requests, response formats, and best practices for implementation. It is designed to be clear, structured, and accessible for developers at all levels."
+    },
+    "blog": {
+      title: "Blog",
+      content: "The blog offers insights into new features, industry trends, psychological concepts, product updates, and expert discussions. It serves as an educational hub for users who want to stay informed about human behavior research, AI innovation, and practical use cases."
+    },
+    "case-studies": {
+      title: "Case Studies",
+      content: "Case studies provide detailed examples of how organizations and individuals have successfully applied the platform. They showcase measurable outcomes, real workflows, challenges addressed, and improvements achieved. These stories demonstrate the platform's effectiveness across different industries, including education, mental health, corporate training, and product design."
+    }
+  };
 
   const footerLinks = [
     {
       title: "Product",
       links: [
-        { name: "How It Works", href: "#how-it-works" },
-        { name: "Try Demo", href: "#demo" },
-        { name: "Timeline", href: "#timeline" },
-        { name: "About", href: "#about" },
+        { name: "How It Works", id: "how-it-works" },
+        { name: "Try Demo", id: "demo" },
+        { name: "About", id: "about" },
       ]
     },
     {
       title: "Support",
       links: [
-        { name: "Privacy Policy", href: "#" },
-        { name: "Terms of Service", href: "#" },
-        { name: "Contact Us", href: "#" },
-        { name: "FAQ", href: "#" },
+        { name: "Privacy Policy", id: "privacy-policy" },
+        { name: "Terms of Service", id: "terms-of-service" },
+        { name: "Contact Us", id: "contact-us" },
+        { name: "FAQ", id: "faq" },
       ]
     },
     {
       title: "Resources",
       links: [
-        { name: "Psychology Research", href: "#" },
-        { name: "API Documentation", href: "#" },
-        { name: "Blog", href: "#" },
-        { name: "Case Studies", href: "#" },
+        { name: "Psychology Research", id: "psychology-research" },
+        { name: "API Documentation", id: "api-documentation" },
+        { name: "Blog", id: "blog" },
+        { name: "Case Studies", id: "case-studies" },
       ]
     }
   ];
@@ -41,12 +100,16 @@ const Footer = () => {
     { icon: Mail, href: "#", label: "Email" },
   ];
 
-  const scrollToSection = (sectionId: string) => {
-    if (sectionId.startsWith('#')) {
-      const element = document.getElementById(sectionId.slice(1));
+  const handleLinkClick = (id: string) => {
+    // Check if it's a section to scroll to
+    if (id === "how-it-works" || id === "demo" || id === "about") {
+      const element = document.getElementById(id);
       if (element) {
         element.scrollIntoView({ behavior: "smooth" });
       }
+    } else {
+      // Open modal for other links
+      setOpenDialog(id);
     }
   };
 
@@ -61,35 +124,17 @@ const Footer = () => {
           {/* Brand Section */}
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-10 h-10 bg-gradient-ethnic rounded-xl flex items-center justify-center">
-                <span className="text-primary-foreground font-bold">R</span>
-              </div>
+              <img 
+                src="/brain-logo.png" 
+                alt="ReLiveAI Logo" 
+                className="w-10 h-10 object-contain"
+              />
               <span className="font-bold text-2xl hero-text">ReLiveAI</span>
             </div>
             <p className="text-muted-foreground mb-6 leading-relaxed max-w-md">
               Empowering better decision-making through AI-powered regret analysis 
               and counterfactual thinking. Learn from your past to build a better future.
             </p>
-            
-            {/* Social Links */}
-            <div className="flex items-center space-x-3">
-              {socialLinks.map((social) => {
-                const Icon = social.icon;
-                return (
-                  <Button
-                    key={social.label}
-                    variant="ghost"
-                    size="icon"
-                    className="hover:bg-primary/10 hover:text-primary transition-smooth"
-                    asChild
-                  >
-                    <a href={social.href} aria-label={social.label}>
-                      <Icon className="h-4 w-4" />
-                    </a>
-                  </Button>
-                );
-              })}
-            </div>
           </div>
 
           {/* Footer Links */}
@@ -102,7 +147,7 @@ const Footer = () => {
                 {section.links.map((link) => (
                   <li key={link.name}>
                     <button
-                      onClick={() => scrollToSection(link.href)}
+                      onClick={() => handleLinkClick(link.id)}
                       className="text-muted-foreground hover:text-primary transition-smooth text-sm"
                     >
                       {link.name}
@@ -112,26 +157,6 @@ const Footer = () => {
               </ul>
             </div>
           ))}
-        </div>
-
-        {/* Newsletter Signup */}
-        <div className="ethnic-card p-6 mb-12">
-          <div className="text-center max-w-2xl mx-auto">
-            <h3 className="text-xl font-semibold mb-2">Stay Updated</h3>
-            <p className="text-muted-foreground mb-4">
-              Get insights on decision-making psychology and updates on new features.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-2 rounded-md border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-              <Button variant="ethnic">
-                Subscribe
-              </Button>
-            </div>
-          </div>
         </div>
 
         {/* Ornamental Divider */}
@@ -144,11 +169,11 @@ const Footer = () => {
                 © 2024 ReLiveAI. All rights reserved.
               </p>
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                <button onClick={() => scrollToSection('privacy')} className="hover:text-primary transition-colors">
+                <button onClick={() => setOpenDialog("privacy-policy")} className="hover:text-primary transition-colors">
                   Privacy Policy
                 </button>
                 <span>|</span>
-                <button onClick={() => scrollToSection('contact')} className="hover:text-primary transition-colors">
+                <button onClick={() => setOpenDialog("contact-us")} className="hover:text-primary transition-colors">
                   Contact
                 </button>
               </div>
@@ -159,6 +184,20 @@ const Footer = () => {
           </div>
         </div>
       </div>
+
+      {/* Dialog for footer links */}
+      <Dialog open={!!openDialog} onOpenChange={() => setOpenDialog(null)}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold">
+              {openDialog && dialogContent[openDialog]?.title}
+            </DialogTitle>
+          </DialogHeader>
+          <DialogDescription className="text-base leading-relaxed pt-4">
+            {openDialog && dialogContent[openDialog]?.content}
+          </DialogDescription>
+        </DialogContent>
+      </Dialog>
     </footer>
   );
 };

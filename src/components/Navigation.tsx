@@ -26,7 +26,6 @@ const Navigation = () => {
   const navItems = [
     { label: "How It Works", id: "how-it-works" },
     { label: "Try Demo", id: "demo" },
-    { label: "Timeline", id: "timeline" },
     { label: "About", id: "about" },
   ];
 
@@ -42,10 +41,11 @@ const Navigation = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center space-x-2">
-            {/* Temporary: Will show actual logo once logo.png is added to public folder */}
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-400 via-red-400 to-purple-600 flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-lg">🧠</span>
-            </div>
+            <img 
+              src="/brain-logo.png" 
+              alt="ReLiveAI Logo" 
+              className="w-10 h-10 object-contain"
+            />
             <span className="font-bold text-xl hero-text">ReLiveAI</span>
           </div>
 

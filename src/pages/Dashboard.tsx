@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { Brain, ArrowLeft, Target, Lightbulb, TrendingUp, Heart, CheckCircle, AlertTriangle, Smile, Clock, Lock } from "lucide-react";
+import { Brain, ArrowLeft, Target, Lightbulb, TrendingUp, Heart, CheckCircle, AlertTriangle, Smile, Clock, Lock, Download } from "lucide-react";
 import TypewriterText from "@/components/TypewriterText";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+import { useToast } from "@/components/ui/use-toast";
 
 interface AnalysisResult {
   label: string;
@@ -35,6 +38,9 @@ const Dashboard = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [result, setResult] = useState<AnalysisResult | null>(null);
+  const dashboardRef = useRef<HTMLDivElement>(null);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (location.state?.analysisResult) {
@@ -44,6 +50,217 @@ const Dashboard = () => {
       navigate('/');
     }
   }, [location.state, navigate]);
+
+  const generatePDF = async () => {
+    if (!dashboardRef.current || !result) return;
+
+    setIsGeneratingPDF(true);
+    toast({
+      title: "Generating PDF",
+      description: "Please wait while we create your analysis report...",
+    });
+
+    try {
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 15;
+      let yPosition = margin;
+
+      // Helper function to add text with word wrap
+      const addText = (text: string, fontSize: number, isBold: boolean = false, color: [number, number, number] = [0, 0, 0]) => {
+        pdf.setFontSize(fontSize);
+        pdf.setFont("helvetica", isBold ? "bold" : "normal");
+        pdf.setTextColor(color[0], color[1], color[2]);
+        const lines = pdf.splitTextToSize(text, pageWidth - 2 * margin);
+        
+        lines.forEach((line: string) => {
+          if (yPosition > pageHeight - margin) {
+            pdf.addPage();
+            yPosition = margin;
+          }
+          pdf.text(line, margin, yPosition);
+          yPosition += fontSize * 0.5;
+        });
+        yPosition += 3;
+      };
+
+      // Helper function to check and add new page
+      const checkNewPage = (requiredSpace: number) => {
+        if (yPosition + requiredSpace > pageHeight - margin) {
+          pdf.addPage();
+          yPosition = margin;
+          return true;
+        }
+        return false;
+      };
+
+      // Title Page
+      pdf.setFillColor(139, 69, 19);
+      pdf.rect(0, 0, pageWidth, 50, 'F');
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(24);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("ReLiveAI", pageWidth / 2, 25, { align: "center" });
+      pdf.setFontSize(16);
+      pdf.text("Regret Analysis Report", pageWidth / 2, 38, { align: "center" });
+      
+      yPosition = 65;
+      pdf.setTextColor(0, 0, 0);
+
+      // Date
+      addText(`Generated: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, 10, false, [100, 100, 100]);
+      yPosition += 5;
+
+      // Summary Section
+      addText("Analysis Summary", 18, true, [139, 69, 19]);
+      pdf.setDrawColor(139, 69, 19);
+      pdf.line(margin, yPosition, pageWidth - margin, yPosition);
+      yPosition += 8;
+
+      addText(`Regret Type: ${result.label}`, 12, true);
+      addText(`Regret Intensity: ${result.intensity.toFixed(1)} / 10`, 12, true);
+      addText(`Analysis Confidence: ${result.confidence}%`, 12, true);
+      addText(`Affected Domain: ${result.affectedDomain}`, 12, true);
+      yPosition += 5;
+
+      // Emotional Tone
+      checkNewPage(40);
+      addText("Emotional Analysis", 16, true, [139, 69, 19]);
+      pdf.line(margin, yPosition, pageWidth - margin, yPosition);
+      yPosition += 8;
+      addText(`Primary Emotion: ${result.emotionalTone.primary}`, 11, true);
+      addText(`Secondary Emotions: ${result.emotionalTone.secondary.join(', ')}`, 11, false);
+      yPosition += 5;
+
+      // Reflection
+      checkNewPage(50);
+      addText("Your Reflection", 16, true, [139, 69, 19]);
+      pdf.line(margin, yPosition, pageWidth - margin, yPosition);
+      yPosition += 8;
+      addText(result.reflection, 10, false);
+      yPosition += 5;
+
+      // Alternative Perspective
+      checkNewPage(50);
+      addText("Alternative Perspective", 16, true, [139, 69, 19]);
+      pdf.line(margin, yPosition, pageWidth - margin, yPosition);
+      yPosition += 8;
+      addText(result.perspective, 10, false);
+      yPosition += 5;
+
+      // Impact Analysis
+      checkNewPage(70);
+      addText("Impact Analysis", 16, true, [139, 69, 19]);
+      pdf.line(margin, yPosition, pageWidth - margin, yPosition);
+      yPosition += 8;
+      
+      addText("Current Impact:", 12, true);
+      addText(result.currentImpact, 10, false);
+      yPosition += 3;
+      
+      addText("Future Projection:", 12, true);
+      addText(result.futureProjection, 10, false);
+      yPosition += 3;
+      
+      addText("Irreversible Limitation:", 12, true);
+      addText(result.irreversibleLimitation, 10, false);
+      yPosition += 5;
+
+      // Threat Analysis
+      checkNewPage(80);
+      addText("Threat Analysis - Emotional & Health Perspective", 16, true, [139, 69, 19]);
+      pdf.line(margin, yPosition, pageWidth - margin, yPosition);
+      yPosition += 8;
+
+      const threats = [
+        { name: 'Stress', data: result.threatAnalysis.stress },
+        { name: 'Anxiety', data: result.threatAnalysis.anxiety },
+        { name: 'Motivation Loss', data: result.threatAnalysis.motivationLoss },
+        { name: 'Health Risk', data: result.threatAnalysis.healthRisk }
+      ];
+
+      threats.forEach((threat) => {
+        checkNewPage(20);
+        addText(`${threat.name}: ${threat.data.level} (${threat.data.score}/5)`, 11, true);
+        
+        // Draw progress bar
+        const barWidth = 60;
+        const barHeight = 4;
+        pdf.setFillColor(230, 230, 230);
+        pdf.rect(margin + 5, yPosition, barWidth, barHeight, 'F');
+        
+        const fillWidth = (threat.data.score / 5) * barWidth;
+        const color = threat.data.level === 'High' ? [239, 68, 68] : 
+                     threat.data.level === 'Medium' ? [251, 146, 60] : [34, 197, 94];
+        pdf.setFillColor(color[0], color[1], color[2]);
+        pdf.rect(margin + 5, yPosition, fillWidth, barHeight, 'F');
+        
+        yPosition += 10;
+      });
+      yPosition += 5;
+
+      // Psychological Insights
+      checkNewPage(60);
+      addText("Psychological Insights", 16, true, [139, 69, 19]);
+      pdf.line(margin, yPosition, pageWidth - margin, yPosition);
+      yPosition += 8;
+
+      result.insights.forEach((insight, index) => {
+        checkNewPage(25);
+        addText(`${index + 1}. ${insight}`, 10, false);
+        yPosition += 2;
+      });
+      yPosition += 5;
+
+      // Growth Suggestions
+      checkNewPage(60);
+      addText("Growth Suggestions", 16, true, [139, 69, 19]);
+      pdf.line(margin, yPosition, pageWidth - margin, yPosition);
+      yPosition += 8;
+
+      result.suggestions.forEach((suggestion, index) => {
+        checkNewPage(25);
+        addText(`${index + 1}. ${suggestion}`, 10, false);
+        yPosition += 2;
+      });
+      yPosition += 10;
+
+      // Disclaimer
+      checkNewPage(30);
+      pdf.setFillColor(250, 250, 250);
+      pdf.rect(margin, yPosition, pageWidth - 2 * margin, 20, 'F');
+      yPosition += 7;
+      pdf.setFontSize(9);
+      pdf.setFont("helvetica", "italic");
+      pdf.setTextColor(100, 100, 100);
+      const disclaimerLines = pdf.splitTextToSize(
+        "This tool is for reflection and growth, not a substitute for professional advice. If you're experiencing significant distress, please consult with a qualified mental health professional.",
+        pageWidth - 2 * margin - 10
+      );
+      disclaimerLines.forEach((line: string) => {
+        pdf.text(line, pageWidth / 2, yPosition, { align: "center" });
+        yPosition += 4;
+      });
+
+      // Save PDF
+      pdf.save(`ReLiveAI_Analysis_${new Date().toISOString().split('T')[0]}.pdf`);
+
+      toast({
+        title: "PDF Generated Successfully",
+        description: "Your analysis report has been downloaded.",
+      });
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast({
+        title: "PDF Generation Failed",
+        description: "There was an error creating your PDF. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
 
   if (!result) {
     return (
@@ -115,7 +332,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
+    <div className="min-h-screen bg-gradient-subtle" ref={dashboardRef}>
       {/* Header */}
       <div className="border-b bg-background/95 backdrop-blur sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
@@ -531,6 +748,29 @@ const Dashboard = () => {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Download PDF Button */}
+        <div className="mt-8 flex justify-center">
+          <Button
+            variant="ethnic"
+            size="lg"
+            onClick={generatePDF}
+            disabled={isGeneratingPDF}
+            className="min-w-[250px]"
+          >
+            {isGeneratingPDF ? (
+              <>
+                <Brain className="h-5 w-5 mr-2 animate-spin" />
+                Generating PDF...
+              </>
+            ) : (
+              <>
+                <Download className="h-5 w-5 mr-2" />
+                Download Analysis Report (PDF)
+              </>
+            )}
+          </Button>
         </div>
 
         {/* Disclaimer */}
