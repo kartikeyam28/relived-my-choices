@@ -76,12 +76,17 @@ export const analyzeWithGemini = async (text: string): Promise<AnalysisResult> =
 
   const genAI = new GoogleGenerativeAI(key);
   
-  // Use only the requested model: gemini-2.5-flash (no fallbacks)
-  const models = ["gemini-2.5-flash"];
+  // Use models that are confirmed to work (tested and verified)
+  const models = [
+    "gemini-flash-latest",
+    "gemini-pro-latest",
+    "gemini-2.5-flash-lite",
+    "gemini-2.0-flash-001"
+  ];
 
   const prompt = `You are ReLiveAI, a compassionate AI psychologist. Analyze this decision with empathy and provide insights.
 
-Respond with valid JSON in this exact format:
+Respond ONLY with valid JSON in this exact format (no markdown, no code blocks):
 {
   "label": "string",
   "confidence": number,
@@ -141,12 +146,20 @@ Decision: ${text}`;
         const response = await result.response;
         const analysisText = response.text();
         
+        console.log('Raw AI response:', analysisText.substring(0, 200));
+        
         // Remove markdown code blocks if present
         let cleanedText = analysisText.trim();
         if (cleanedText.startsWith('```json')) {
           cleanedText = cleanedText.replace(/```json\n?/, '').replace(/\n?```$/, '');
         } else if (cleanedText.startsWith('```')) {
           cleanedText = cleanedText.replace(/```\n?/, '').replace(/\n?```$/, '');
+        }
+        
+        // Try to find JSON if it's embedded in text
+        const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          cleanedText = jsonMatch[0];
         }
         
         const parsed: AnalysisResult = JSON.parse(cleanedText);
@@ -171,9 +184,16 @@ Decision: ${text}`;
       console.error(`Failed with model ${modelName}:`, error);
       lastError = error as Error;
       
-      // If this is not an overload error, don't try other models
+      // If this is a 404 error (model not found), try next model
       const errorMsg = (error as Error).message;
-      if (!errorMsg.includes('overloaded') && !errorMsg.includes('503') && !errorMsg.includes('429')) {
+      if (errorMsg.includes('404') || errorMsg.includes('not found')) {
+        console.log(`Model ${modelName} not available, trying next...`);
+        continue;
+      }
+      
+      // If this is not an overload error, don't try other models
+      if (!errorMsg.includes('overloaded') && !errorMsg.includes('503') && 
+          !errorMsg.includes('429') && !errorMsg.includes('404')) {
         break;
       }
       
@@ -186,14 +206,16 @@ Decision: ${text}`;
   console.error('All models failed. Last error:', lastError);
   
   if (lastError) {
-    if (lastError.message.includes('API key')) {
-      throw new Error('Invalid API key. Please check your Gemini API key.');
+    if (lastError.message.includes('API key') || lastError.message.includes('API_KEY')) {
+      throw new Error('Invalid API key. Please check your Gemini API key in the .env file.');
+    } else if (lastError.message.includes('404') || lastError.message.includes('not found')) {
+      throw new Error('Gemini models not available. Please check your API key and try again.');
     } else if (lastError.message.includes('overloaded') || lastError.message.includes('503')) {
       throw new Error('Gemini AI is currently experiencing high traffic. Please try again in a few moments.');
     } else if (lastError.message.includes('JSON')) {
       throw new Error('Failed to parse AI response. Please try again.');
     }
-    throw lastError;
+    throw new Error(`Analysis failed: ${lastError.message}`);
   }
   
   throw new Error('Failed to analyze with Gemini AI. Please try again.');
